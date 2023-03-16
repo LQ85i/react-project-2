@@ -25,11 +25,13 @@ class App extends Component {
           details: '',
           duration: []
         }]
-      }
+      },
+      mode: "view"
     };
     this.setState = this.setState.bind(this);
     this.storeInformation = this.storeInformation.bind(this);
-    this.changeToEditingMode = this.changeToEditingMode.bind(this);
+    this.changeMode = this.changeMode.bind(this);
+    this.submitForm = this.submitForm.bind(this);
   }
   storeInformation() {
     const contact = document.getElementById("contact-information");
@@ -79,7 +81,7 @@ class App extends Component {
         details: details,
         duration: duration
       })
-      
+
     }
 
     this.setState({
@@ -88,83 +90,158 @@ class App extends Component {
         education: educations_data,
         experience: experiences_data
       }
+    }, () => {
+      this.replaceViewWithForm();
     });
 
   }
-  changeToEditingMode() {
-    this.storeInformation();
-    // this.replaceViewWithForm();
+
+  submitForm() {
+    const cvForm = document.getElementById("cv-form");
+    const formData = new FormData(cvForm);
+
+    const elemName = document.querySelector("#container-name .content");
+    elemName.innerHTML = formData.get("fullName");
+    const elemEmail = document.querySelector("#container-email .content");
+    elemEmail.innerHTML = formData.get("email");
+    
+
+    const cv = document.getElementById("cv");
+    cvForm.parentNode.appendChild(cv);
+    cv.parentNode.removeChild(cvForm);
+  }
+
+  replaceViewWithForm() {
+    const elemName = document.querySelector("#container-name .content");
+    elemName.innerHTML = "";
+    const inputName = document.createElement("input");
+    inputName.setAttribute("value", this.state.data.contact.fullName);
+    inputName.setAttribute("type","text");
+    inputName.setAttribute("name", "fullName");
+    inputName.classList.add("text-input")
+    elemName.appendChild(inputName);
+
+    const elemEmail = document.querySelector("#container-email .content");
+    elemEmail.innerHTML = "";
+    const inputEmail = document.createElement("input");
+    inputEmail.setAttribute("value", this.state.data.contact.email);
+    inputName.setAttribute("type","email");
+    inputEmail.setAttribute("name","email");
+    inputEmail.classList.add("text-input")
+    elemEmail.appendChild(inputEmail);
+
+    const cv = document.getElementById("cv");
+    const elemForm = document.createElement("form");
+    elemForm.id = "cv-form";
+    elemForm.setAttribute("onsubmit", "{this.submitForm}")
+    cv.parentNode.appendChild(elemForm);
+    elemForm.appendChild(cv);
+
+  }
+
+  changeModeContainer() {
+    if (this.state.mode === "view") {
+      document.getElementById("cv").classList.remove("view-mode");
+      const elemModeTitle = document.getElementById("mode-title");
+      elemModeTitle.innerHTML = "Editing Mode"
+      const elemModeButton = document.getElementById("mode-button");
+      elemModeButton.innerHTML = "Save changes"
+    } else if (this.state.mode === "edit") {
+      document.getElementById("cv").classList.add("view-mode");
+      const elemModeTitle = document.getElementById("mode-title");
+      elemModeTitle.innerHTML = "Viewing Mode"
+      const elemModeButton = document.getElementById("mode-button");
+      elemModeButton.innerHTML = "Go to Editing Mode"
+    }
+  }
+
+  changeMode() {
+    if (this.state.mode === "view") {
+      this.storeInformation(); //callbacks with a function to change view to form
+      this.changeModeContainer();
+      this.setState({
+        mode: "edit"
+      })
+    } else if (this.state.mode === "edit") {
+      this.changeModeContainer();
+      this.setState({
+        mode: "view"
+      })
+      this.submitForm();
+    }
   }
 
   render() {
     return (
-      <div id="content" >
+      <div id="main-content" >
         <div id="main-title">CV Application</div>
         <div id="mode-container">
-          <div id="mode-title">Viewing mode</div>
-          <button id="mode-button" onClick={this.changeToEditingMode}>Go to editing mode</button>
+          <div id="mode-title">Viewing Mode</div>
+          <button id="mode-button" onClick={this.changeMode}>Go to Editing Mode</button>
         </div>
         <div id="cv">
-          <div className="cv-section" id="contact-information">
-            <div className="cv-section-title">Contact information</div>
-            <div className="left-container">
-              <div className="cv-item" id="container-name">
-                <div className="title">Name:</div>
-                <div className="content">[Firstname Lastname]</div>
+          <div id="cv-container">
+            <div className="cv-section" id="contact-information">
+              <div className="cv-section-title">Contact information</div>
+              <div className="left-container">
+                <div className="cv-item" id="container-name">
+                  <div className="title">Name:</div>
+                  <div className="content">[Firstname Lastname]</div>
+                </div>
+                <div className="cv-item" id="container-email">
+                  <div className="title">Email:</div>
+                  <div className="content">[a@b.com]</div>
+                </div>
+                <div className="cv-item" id="container-phonenumber">
+                  <div className="title">Phone number:</div>
+                  <div className="content">[123-4567890]</div>
+                </div>
+                <div className="cv-item" id="container-applyfor">
+                  <div className="title">Applying for:</div>
+                  <div className="content">[Worker]</div>
+                </div>
               </div>
-              <div className="cv-item" id="container-email">
-                <div className="title">Email:</div>
-                <div className="content">[a@b.com]</div>
-              </div>
-              <div className="cv-item" id="container-phonenumber">
-                <div className="title">Phone number:</div>
-                <div className="content">[123-4567890]</div>
-              </div>
-              <div className="cv-item" id="container-applyfor">
-                <div className="title">Applying for:</div>
-                <div className="content">[Worker]</div>
-              </div>
-            </div>
-            <div className="right-container">
-              <img src={require("./images/img1.png")} alt="" />
-            </div>
-          </div>
-          <div className="cv-divider"></div>
-          <div className="cv-section" id="container-education">
-            <div className="cv-section-title">Education</div>
-            <div className="experience-block">
-              <div className="cv-date">
-                <div className="content duration">2022-03 - present</div>
-              </div>
-              <div className="cv-item">
-                <div className="content school-name header1">[school name]</div>
-              </div>
-              <div className="cv-item">
-                <div className="content title-of-study header2">[title of study]</div>
-              </div>
-              <div className="cv-item">
-                <div className="content details header3">[more details]</div>
+              <div className="right-container">
+                <img src={require("./images/img1.png")} alt="" />
               </div>
             </div>
-          </div>
-          <div className="cv-divider"></div>
-          <div className="cv-section" id="container-experience">
-            <div className="cv-section-title">Experience</div>
-            <div className="experience-block">
-              <div className="cv-date">
-                <div className="content duration">2022-03 - present</div>
+            <div className="cv-divider"></div>
+            <div className="cv-section" id="container-education">
+              <div className="cv-section-title">Education</div>
+              <div className="experience-block">
+                <div className="cv-date">
+                  <div className="content duration">2022-03 - present</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content school-name header1">[school name]</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content title-of-study header2">[title of study]</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content details header3">[more details]</div>
+                </div>
               </div>
-              <div className="cv-item">
-                <div className="content company-name header1">[company name]</div>
-              </div>
-              <div className="cv-item">
-                <div className="content position-title header2">[position title]</div>
-              </div>
-              <div className="cv-item">
-                <div className="content main-tasks header3">[main tasks]</div>
-              </div>
-              <div className="cv-item">
-                <div className="content details header3">[more details]</div>
+            </div>
+            <div className="cv-divider"></div>
+            <div className="cv-section" id="container-experience">
+              <div className="cv-section-title">Experience</div>
+              <div className="experience-block">
+                <div className="cv-date">
+                  <div className="content duration">2022-03 - present</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content company-name header1">[company name]</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content position-title header2">[position title]</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content main-tasks header3">[main tasks]</div>
+                </div>
+                <div className="cv-item">
+                  <div className="content details header3">[more details]</div>
+                </div>
               </div>
             </div>
           </div>
