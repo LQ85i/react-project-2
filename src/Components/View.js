@@ -1,8 +1,14 @@
 import { Component } from "react";
+import EducationBlock from "./EducationBlock";
+import EmploymentBlock from "./EmploymentBlock";
 
 class View extends Component {
 
     render() {
+        const education = this.props.data.education;
+        const educationBlocks = education.map((d,id) => <EducationBlock data={d} key={id} mode={this.props.mode}/>);
+        const employment = this.props.data.employment;
+        const employmentBlocks = employment.map((d,id) => <EmploymentBlock data={d} key={id} mode={this.props.mode}/>);
         return (
             <div id="cv">
                 <div id="cv-container">
@@ -33,41 +39,12 @@ class View extends Component {
                     <div className="cv-divider"></div>
                     <div className="cv-section" id="container-education">
                         <div className="cv-section-title">Education</div>
-                        <div className="experience-block">
-                            <div className="cv-date">
-                                <div className="data-field duration">{this.props.data.education[0].duration[0]} - {this.props.data.education[0].duration[1]}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field school-name header1">{this.props.data.education[0].schoolName}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field title-of-study header2">{this.props.data.education[0].titleOfStudy}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field details header3">{this.props.data.education[0].details}</div>
-                            </div>
-                        </div>
+                        {educationBlocks}
                     </div>
                     <div className="cv-divider"></div>
-                    <div className="cv-section" id="container-experience">
-                        <div className="cv-section-title">Experience</div>
-                        <div className="experience-block">
-                            <div className="cv-date">
-                                <div className="data-field duration">{this.props.data.experience[0].duration[0]} - {this.props.data.experience[0].duration[1]}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field company-name header1">{this.props.data.experience[0].companyName}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field position-title header2">{this.props.data.experience[0].positionTitle}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field main-tasks header3">{this.props.data.experience[0].mainTasks}</div>
-                            </div>
-                            <div className="cv-item">
-                                <div className="data-field details header3">{this.props.data.experience[0].details}</div>
-                            </div>
-                        </div>
+                    <div className="cv-section" id="container-employment">
+                        <div className="cv-section-title">Employment</div>
+                        {employmentBlocks}
                     </div>
                 </div>
             </div>
