@@ -3,6 +3,7 @@ import View from "./Components/View.js"
 import Form from "./Components/Form.js"
 import ModeContainer from "./Components/ModeContainer.js"
 import uniqid from "uniqid";
+import './styles/styles.css'
 
 
 class App extends Component {
