@@ -1,28 +1,29 @@
-import { Component } from "react";
 import deleteIcon from "../images/delete.svg"
 
-class EducationBlock extends Component {
+const EducationBlock = (passedProps) => {
 
-    viewOrEditBlock() {
-        if (this.props.mode === "view") {
-            return <div className="experience-block" id={this.props.data.id}>
+    const { data, id, mode, handleChange } = passedProps;
+
+    const viewOrEditBlock = () => {
+        if (mode === "view") {
+            return <div className="experience-block" id={id}>
                 <div className="cv-date">
-                    <div className="data-field duration">{this.props.data.duration[0]} - {this.props.data.duration[1]}</div>
+                    <div className="data-field duration">{data.duration[0]} - {data.duration[1]}</div>
                 </div>
                 <div className="cv-item">
-                    <div className="data-field school-name header1">{this.props.data.schoolName}</div>
+                    <div className="data-field school-name header1">{data.schoolName}</div>
                 </div>
                 <div className="cv-item">
-                    <div className="data-field title-of-study header2">{this.props.data.titleOfStudy}</div>
+                    <div className="data-field title-of-study header2">{data.titleOfStudy}</div>
                 </div>
                 <div className="cv-item">
-                    <div className="data-field details header3">{this.props.data.details}</div>
+                    <div className="data-field details header3">{data.details}</div>
                 </div>
             </div>
-        } else if (this.props.mode === "edit") {
-            return <div className="experience-block" id={this.props.data.id}>
+        } else if (mode === "edit") {
+            return <div className="experience-block" id={id}>
                 <button
-                    onClick={this.props.handleChange}
+                    onClick={handleChange}
                     className="btn-remove-experience">
                     <img src={deleteIcon} alt="" />
                 </button>
@@ -32,18 +33,18 @@ class EducationBlock extends Component {
                             type="text"
                             name="durationFrom"
                             placeholder="[from]"
-                            onChange={this.props.handleChange}
+                            onChange={handleChange}
                             className="duration-input"
-                            defaultValue={this.props.data.duration[0]}
+                            defaultValue={data.duration[0]}
                         />
                         -
                         <input
                             type="text"
                             name="durationUntil"
                             placeholder="[until]"
-                            onChange={this.props.handleChange}
+                            onChange={handleChange}
                             className="duration-input"
-                            defaultValue={this.props.data.duration[1]}
+                            defaultValue={data.duration[1]}
                         />
                     </div>
                 </div>
@@ -53,9 +54,9 @@ class EducationBlock extends Component {
                             type="text"
                             name="schoolName"
                             placeholder="[School name]"
-                            onChange={this.props.handleChange}
+                            onChange={handleChange}
                             className="text-input"
-                            defaultValue={this.props.data.schoolName}
+                            defaultValue={data.schoolName}
                         />
                     </div>
                 </div>
@@ -65,9 +66,9 @@ class EducationBlock extends Component {
                             type="text"
                             name="titleOfStudy"
                             placeholder="[Title of Study]"
-                            onChange={this.props.handleChange}
+                            onChange={handleChange}
                             className="text-input"
-                            defaultValue={this.props.data.titleOfStudy}
+                            defaultValue={data.titleOfStudy}
                         />
                     </div>
                 </div>
@@ -77,9 +78,9 @@ class EducationBlock extends Component {
                             rows="3" cols="48"
                             name="details"
                             placeholder="[more details]"
-                            onChange={this.props.handleChange}
+                            onChange={handleChange}
                             className="text-input"
-                            defaultValue={this.props.data.details}
+                            defaultValue={data.details}
                         />
                     </div>
                 </div>
@@ -88,13 +89,12 @@ class EducationBlock extends Component {
 
     }
 
-    render() {
-        return (
-            <>
-                {this.viewOrEditBlock()}
-            </>
-        )
-    }
+    return (
+        <>
+            {viewOrEditBlock()}
+        </>
+    )
+
 };
 
 export default EducationBlock

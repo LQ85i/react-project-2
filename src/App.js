@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState } from "react";
 import View from "./Components/View.js"
 import Form from "./Components/Form.js"
 import ModeContainer from "./Components/ModeContainer.js"
@@ -6,46 +6,41 @@ import uniqid from "uniqid";
 import './styles/styles.css'
 
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        contact: {
-          fullName: '[Firstname Lastname]',
-          email: '[a@b.com]',
-          phoneNumber: '[123-4567890]',
-          applyingFor: '[Worker]'
-        },
-        education: [{
-          schoolName: '[School name]',
-          titleOfStudy: '[Title of study]',
-          details: '[more details]',
-          duration: ["2022-03", "present"],
-          id: uniqid()
-        }],
-        employment: [{
-          companyName: '[Company name]',
-          positionTitle: '[Position title]',
-          mainTasks: '[Main tasks]',
-          details: '[more details]',
-          duration: ["2022-03", "present"],
-          id: uniqid()
-        }]
+const App = () => {
+  const [state, setState] = useState({
+    data: {
+      contact: {
+        fullName: '[Firstname Lastname]',
+        email: '[a@b.com]',
+        phoneNumber: '[123-4567890]',
+        applyingFor: '[Worker]'
       },
-      mode: "view"
-    };
-    this.setState = this.setState.bind(this);
-    this.changeMode = this.changeMode.bind(this);
-    this.updateStateOnFormChange = this.updateStateOnFormChange.bind(this);
-    this.addExperienceBlock = this.addExperienceBlock.bind(this);
-  }
+      education: [{
+        schoolName: '[School name]',
+        titleOfStudy: '[Title of study]',
+        details: '[more details]',
+        duration: ["2022-03", "present"],
+        id: uniqid()
+      }],
+      employment: [{
+        companyName: '[Company name]',
+        positionTitle: '[Position title]',
+        mainTasks: '[Main tasks]',
+        details: '[more details]',
+        duration: ["2022-03", "present"],
+        id: uniqid()
+      }]
+    },
+    mode: "view"
+  });
 
-  updateStateOnFormChange(category, key, value, index) {
-    let contact_data = this.state.data.contact;
-    let education_data = this.state.data.education;
-    let employment_data = this.state.data.employment;
-    let mode = this.state.mode;
+
+
+  const updateStateOnFormChange = (category, key, value, index) => {
+    let contact_data = state.data.contact;
+    let education_data = state.data.education;
+    let employment_data = state.data.employment;
+    let mode = state.mode;
     if (category === "contact") {
       if (key === "fullName") {
         contact_data.fullName = value;
@@ -87,7 +82,7 @@ class App extends Component {
         employment_data.pop(index);
       }
     }
-    this.setState({
+    setState({
       data: {
         contact: contact_data,
         education: education_data,
@@ -97,11 +92,11 @@ class App extends Component {
     })
   }
 
-  addExperienceBlock(type) {
-    let contact_data = this.state.data.contact;
-    let education_data = this.state.data.education;
-    let employment_data = this.state.data.employment;
-    let mode = this.state.mode;
+  const addExperienceBlock = (type) => {
+    let contact_data = state.data.contact;
+    let education_data = state.data.education;
+    let employment_data = state.data.employment;
+    let mode = state.mode;
     if (type === "education") {
       const newEducation = {
         schoolName: '[School name]',
@@ -122,7 +117,7 @@ class App extends Component {
       };
       employment_data.push(newEmployment);
     }
-    this.setState({
+    setState({
       data: {
         contact: contact_data,
         education: education_data,
@@ -133,14 +128,14 @@ class App extends Component {
   }
 
 
-  changeModeContainer() {
-    if (this.state.mode === "view") {
+  const changeModeContainer = () => {
+    if (state.mode === "view") {
       document.getElementById("cv").classList.remove("view-mode");
       const elemModeTitle = document.getElementById("mode-title");
       elemModeTitle.innerHTML = "Editing Mode"
       const elemModeButton = document.getElementById("mode-button");
       elemModeButton.innerHTML = "Save changes"
-    } else if (this.state.mode === "edit") {
+    } else if (state.mode === "edit") {
       document.getElementById("cv-form").classList.add("view-mode");
       const elemModeTitle = document.getElementById("mode-title");
       elemModeTitle.innerHTML = "Viewing Mode"
@@ -149,41 +144,82 @@ class App extends Component {
     }
   }
 
-  changeMode() {
-    if (this.state.mode === "view") {
-      this.changeModeContainer();
-      this.setState({
-        mode: "edit"
+  const changeMode = () => {
+    if (state.mode === "view") {
+      changeModeContainer();
+      setState(prevState => {
+        let state = { ...prevState };
+        state.mode = "edit";
+        return state
       })
-    } else if (this.state.mode === "edit") {
-      this.changeModeContainer();
-      this.setState({
-        mode: "view"
+    } else if (state.mode === "edit") {
+      changeModeContainer();
+      setState(prevState => {
+        let state = { ...prevState };
+        state.mode = "view";
+        return state
       })
     }
   }
 
-  formOrView() {
-    if (this.state.mode === "view") {
-      return <View data={this.state.data} mode={this.state.mode} />
-    } else if (this.state.mode === "edit") {
+  const handleChange = (e) => {
+    e.preventDefault()
+    const target = e.currentTarget;
+    const value = target.value;
+    const key = target.name;
+    if (target.className === "btn-add-experience") {
+      const section = target.parentNode.parentNode;
+      if (section.id === "container-education") {
+        addExperienceBlock("education");
+      } else if (section.id === "container-employment") {
+        addExperienceBlock("employment");
+      }
+
+    } else if (target.className === "btn-remove-experience") {
+      const experience = target.parentNode;
+      const section = experience.parentNode;
+      const index = [...section.childNodes].indexOf(experience) - 2; // -1 because 0 is a title element
+      if (section.id === "container-education") {
+        updateStateOnFormChange("education", "experience-block", null, index);
+      } else if (section.id === "container-employment") {
+        updateStateOnFormChange("employment", "experience-block", null, index);
+      }
+    } else {
+      const section = target.parentNode.parentNode.parentNode.parentNode;
+      if (section.id === "container-contact") {
+        updateStateOnFormChange("contact", key, value, null);
+      } else if (section.id === "container-education") {
+        const experience = target.parentNode.parentNode.parentNode
+        const index = [...section.childNodes].indexOf(experience) - 2; // -1 because 0 is a title element
+        updateStateOnFormChange("education", key, value, index);
+      } else if (section.id === "container-employment") {
+        const experience = target.parentNode.parentNode.parentNode
+        const index = [...section.childNodes].indexOf(experience) - 2; // -1 because 0 is a title element
+        updateStateOnFormChange("employment", key, value, index);
+      }
+    }
+  }
+
+  const formOrView = () => {
+    if (state.mode === "view") {
+      return <View props={state} />
+    } else if (state.mode === "edit") {
       return <Form
-        data={this.state.data}
-        mode={this.state.mode}
-        updateStateOnFormChange={this.updateStateOnFormChange}
-        addExperienceBlock={this.addExperienceBlock}
+        props={state}
+        handleChange={handleChange}
       />
     }
   }
 
-  render() {
-    return (
-      <div id="main-container">
-        <div id="main-title">CV Application</div>
-        <ModeContainer changeMode={this.changeMode} />
-        {this.formOrView()}
-      </div>);
-  }
+
+  return (
+    <div id="main-container">
+      <div id="main-title">CV Application</div>
+      <ModeContainer changeMode={changeMode} />
+      {formOrView()}
+    </div>
+  );
+
 
 }
 
