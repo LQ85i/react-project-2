@@ -1,16 +1,14 @@
-import { Component } from "react";
 
+const ModeContainer = (passedProps) => {
+    const {changeMode} = passedProps;
 
-class ModeContainer extends Component {
+    return (
+        <div id="mode-container">
+            <div id="mode-title">Viewing Mode</div>
+            <button id="mode-button" onClick={changeMode}>Go to Editing Mode</button>
+        </div>
+    )
 
-    render() {
-        return (
-            <div id="mode-container">
-                <div id="mode-title">Viewing Mode</div>
-                <button id="mode-button" onClick={this.props.changeMode}>Go to Editing Mode</button>
-            </div>
-        )
-    }
 }
 
 export default ModeContainer;
